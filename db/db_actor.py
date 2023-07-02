@@ -1,8 +1,19 @@
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from db.models import DbActor
+from db.models import DbActor, DbMovie
 from router.helper import check_actor
 from router.schemas import ActorBase
+from sqlalchemy import desc, func
+
+def get_actor_rankings(db: Session):
+    rankings = (
+        db.query(DbActor.id,func.avg(DbMovie.average_rating))
+        .join(DbMovie.actors)
+        .group_by(DbActor.id)
+        .order_by(func.avg(DbMovie.average_rating).desc())  # Sort by average rating in descending order
+        .all()
+    )
+    return rankings
 
 def create_actor(db: Session, actor: ActorBase):
     new_actor = DbActor(

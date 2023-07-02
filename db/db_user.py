@@ -4,6 +4,7 @@ from router.helper import check_user
 from router.schemas import UserBase
 from sqlalchemy.orm import Session
 from db.hashing import Hash
+
 def Create_user(db: Session, request: UserBase):
   new_user = DbUser(
     username = request.username,

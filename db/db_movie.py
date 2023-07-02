@@ -6,7 +6,7 @@ from router.schemas import MovieBase, MovieDisplay
 from router.helper import check_movie
 from typing import Optional
 from router.helper import check_actor,check_director,check_category
-
+from sqlalchemy import desc
 def create_movie(db: Session, movie: MovieBase, category_id: int):
     
     new_movie = DbMovie(
@@ -59,7 +59,7 @@ def delete_movie(db: Session, movie_id: int):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Movie not found")
 
 
-def search_movies(db: Session, title: Optional[str]= None,category: Optional[str] = None, director: Optional[str] = None):
+def search_movies(db: Session, title: Optional[str]= None,category: Optional[str] = None, director: Optional[str] = None, sort_by: Optional[str] = None):
     query = db.query(DbMovie)
     if title:
         query = query.filter(DbMovie.title.ilike(f'%{title}%'))
@@ -67,19 +67,20 @@ def search_movies(db: Session, title: Optional[str]= None,category: Optional[str
         query = query.join(DbCategory, DbMovie.category_id == DbCategory.id).filter(DbCategory.name.ilike(f'%{category}%'))
     if director:
         query = query.join(DbDirector, DbMovie.director_id == DbDirector.id).filter(DbDirector.name.ilike(f'%{director}%'))
+   
+    if sort_by:
+        if sort_by == "year":
+            query = query.order_by(DbMovie.release_date)
+        elif sort_by == "title":
+            query = query.order_by(DbMovie.title)
+        elif sort_by == "rating":
+            query = query.order_by(DbMovie.average_rating.desc())
+        elif sort_by == "category":
+            query = query.join(DbCategory, DbMovie.category_id == DbCategory.id).order_by(DbCategory.name)
+    
+    
     movies = query.all()
     return movies
 
 
-
-
-
-
-    #if not title:
-#
- #       raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="please provide the movie title")
-  #  
-   # matching_movies = db.query(DbMovie).filter(DbMovie.title.ilike(f"%{title}%")).all()
-#
- #   return matching_movies
 

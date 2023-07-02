@@ -1,6 +1,17 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
+class ReviewBase(BaseModel):
+    movie_id: int
+    content: str
+
+class ReviewDisplay(BaseModel):
+    movie_id: int
+    user_id: int
+    content: str
+    class Config:
+        orm_mode = True
+
 class ActorBase(BaseModel):
     name: str
     date_of_birth: str
@@ -10,12 +21,21 @@ class ActorBase(BaseModel):
 class ActorMovie(BaseModel):
     id: int
 
+
+class ActorRating(BaseModel):
+    id: int
+    average_rating: float
+    class Config:
+        orm_mode = True
+
 class MovieBase(BaseModel):
+    image_url: str
     title: str
     release_date: str
     plot_summary: str
     director_id: int
     actors: List[ActorMovie] 
+    
 
 class CategoryForMovie(BaseModel):
     id: int
@@ -30,11 +50,13 @@ class DirectorforMovie(BaseModel):
 
 class MovieDisplay(BaseModel):
     id: int
+    #image_url: str
     title: str
     release_date: str
     average_rating: Optional[int]
     category: Optional[CategoryForMovie]
     director: Optional [DirectorforMovie]
+    #trailer: Optional[str]
     class Config:
         orm_mode = True
 

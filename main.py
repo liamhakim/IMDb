@@ -13,4 +13,5 @@ app.include_router(user.router)
 app.include_router(authentication.router)
 app.include_router(rating.router)
 
-Base.metadata.create_all(engine)
+Base.metadata.create_all(engine) 
+print("Funk you")

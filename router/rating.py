@@ -2,13 +2,12 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from auth.oauth2 import get_current_user
 from db.database import get_db
-from router.schemas import RatingDisplay, RatingCreate
+from router.schemas import RatingDisplay, RatingCreate, UserAuth
 from db.db_rating import create_rating, delete_rating, update_rating
-from router.schemas import UserAuth
 
 router = APIRouter(prefix="/ratings", tags=["ratings"])
 
-@router.post("", response_model=RatingDisplay)
+@router.post("")
 def create_rating_endpoint(rating: RatingCreate, db: Session = Depends(get_db), current_user: UserAuth = Depends(get_current_user)):
     return create_rating(rating, db, current_user.id)
 

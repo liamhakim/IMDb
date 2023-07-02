@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, ForeignKey, Integer, String, Table
+from sqlalchemy import Column, Float, ForeignKey, Integer, DECIMAL, String, Table
 from db.database import Base
 from sqlalchemy.orm import relationship
 
@@ -33,13 +33,14 @@ class DbMovie(Base):
     title = Column(String)
     release_date = Column(String)
     plot_summary = Column(String)
-    average_rating = Column(Integer)
+    average_rating = Column(DECIMAL(8,1))
     category_id = Column(Integer, ForeignKey("categories.id"))
     director_id = Column(Integer, ForeignKey("directors.id")) 
     director = relationship("DbDirector", back_populates="movies")  
     category = relationship("DbCategory", back_populates="movies")
     actors = relationship("DbActor",secondary=movie_actor_association, back_populates="movies")
     ratings = relationship("DbRating", back_populates="movies")
+    reviews = relationship("DbReview", back_populates="movie")
 
 class DbActor(Base):
     __tablename__ = "actors"
@@ -52,12 +53,16 @@ class DbActor(Base):
 
 
 
-#class DbMovieActor(Base):
- #   __tablename__ = "movie_actor"
-#
- #   id = Column(Integer, primary_key=True, index=True)
-  #  movie_id = Column(Integer, ForeignKey("movies.id"), primary_key=True)
-   # actor_id = Column(Integer, ForeignKey("actors.id"), primary_key=True)
+class DbReview(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, primary_key=True, index=True)
+    movie_id = Column(Integer, ForeignKey("movies.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    content = Column(String)
+    
+    movie = relationship("DbMovie", back_populates="reviews")
+    user = relationship("DbUser", back_populates="reviews")
 
 
 
@@ -70,7 +75,7 @@ class DbUser(Base):
     email = Column(String)
     password = Column(String)
     ratings = relationship("DbRating", back_populates="user") 
-    
+    reviews = relationship("DbReview", back_populates="user")
 
 
 class DbRating(Base):
