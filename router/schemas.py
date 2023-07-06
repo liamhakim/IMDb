@@ -57,6 +57,9 @@ class MovieDisplay(BaseModel):
     category: Optional[CategoryForMovie]
     director: Optional [DirectorforMovie]
     #trailer: Optional[str]
+    poster_url: str
+    trailer_url: str
+    plot_summary: str
     class Config:
         orm_mode = True
 

@@ -35,12 +35,15 @@ class DbMovie(Base):
     plot_summary = Column(String)
     average_rating = Column(DECIMAL(8,1))
     category_id = Column(Integer, ForeignKey("categories.id"))
-    director_id = Column(Integer, ForeignKey("directors.id")) 
+    director_id = Column(Integer, ForeignKey("directors.id"))
+    poster_url = Column (String)
+    trailer_url = Column (String)
     director = relationship("DbDirector", back_populates="movies")  
     category = relationship("DbCategory", back_populates="movies")
     actors = relationship("DbActor",secondary=movie_actor_association, back_populates="movies")
     ratings = relationship("DbRating", back_populates="movies")
     reviews = relationship("DbReview", back_populates="movie")
+
 
 class DbActor(Base):
     __tablename__ = "actors"

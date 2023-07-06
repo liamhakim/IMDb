@@ -7,16 +7,25 @@ from router.helper import check_movie
 from typing import Optional
 from router.helper import check_actor,check_director,check_category
 from sqlalchemy import desc
+from router.tmdb_service import get_movie_poster, get_movie_trailer
+
 def create_movie(db: Session, movie: MovieBase, category_id: int):
     
+    poster= get_movie_poster(movie.title)
+    movie_key = get_movie_trailer(poster['trailer_id'])
+    trailer_url = f'https://www.youtube.com/watch?v={movie_key}'
+    print(trailer_url)
+    #trailer_url = get_movie_trailer(movie.title)
     new_movie = DbMovie(
         title=movie.title, 
         release_date=movie.release_date, 
         plot_summary=movie.plot_summary, 
         category_id=category_id,
-        director_id=movie.director_id
+        director_id=movie.director_id,
+        poster_url= poster['image_url'],
+        trailer_url= trailer_url
         )
-
+    
     db.add(new_movie)
     db.commit()
     db.refresh(new_movie)
@@ -28,6 +37,7 @@ def create_movie(db: Session, movie: MovieBase, category_id: int):
     
     db.commit()
     return new_movie
+ 
 
 def get_movie(db: Session, movie_id: int):
     movie= db.query(DbMovie).filter(DbMovie.id == movie_id).first()
