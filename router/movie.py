@@ -9,7 +9,7 @@ from router.schemas import MovieBase, MovieDisplay
 from db import db_movie
 from db.db_movie import create_movie, get_movie, update_movie, delete_movie
 from db.database import get_db
-from router.tmdb_service import get_movie_poster
+from router.tmdb_service import get_movie_poster, get_movie_trailer
 
 router = APIRouter(prefix="/movie", tags=["movie"])
 

@@ -15,7 +15,7 @@ def create_movie(db: Session, movie: MovieBase, category_id: int):
     movie_key = get_movie_trailer(poster['trailer_id'])
     trailer_url = f'https://www.youtube.com/watch?v={movie_key}'
     print(trailer_url)
-    #trailer_url = get_movie_trailer(movie.title)
+    
     new_movie = DbMovie(
         title=movie.title, 
         release_date=movie.release_date, 
