@@ -3,3 +3,4 @@ imdb.db
 images/*
 !images/.gitkeep
 fastapi-venv/
+ 
