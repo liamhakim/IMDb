@@ -7,7 +7,8 @@ from router.helper import check_movie
 from typing import Optional
 from router.helper import check_actor,check_director,check_category
 from sqlalchemy import desc
-from router.tmdb_service import get_movie_poster, get_movie_trailer
+from router.tmdb_service import get_movie_poster, get_movie_trailer, get_trending_movies
+from db.database import SessionLocal
 
 def create_movie(db: Session, movie: MovieBase, category_id: int):
     
@@ -23,7 +24,8 @@ def create_movie(db: Session, movie: MovieBase, category_id: int):
         category_id=category_id,
         director_id=movie.director_id,
         poster_url= poster['image_url'],
-        trailer_url= trailer_url
+        trailer_url= trailer_url,
+        average_rating=movie.average_rating
         )
     
     db.add(new_movie)
@@ -37,6 +39,30 @@ def create_movie(db: Session, movie: MovieBase, category_id: int):
     
     db.commit()
     return new_movie
+###################################
+def store_trending_movies_in_database():
+    # Fetch trending movies from TMDB
+    trending_movies = get_trending_movies()
+    
+    # Open a database session
+    db = SessionLocal()
+    
+    try:
+        # Loop through the trending movies and store them in the database
+        for movie in trending_movies:
+            # Create a new movie in the database
+            create_movie(db, movie)
+        
+        # Commit the changes to the database
+        db.commit()
+    except Exception as e:
+        # Rollback the transaction if an error occurs
+        db.rollback()
+        raise e
+    finally:
+        # Close the database session
+        db.close()
+###################################
  
 
 def get_movie(db: Session, movie_id: int):
@@ -89,8 +115,10 @@ def search_movies(db: Session, title: Optional[str]= None,category: Optional[str
             query = query.join(DbCategory, DbMovie.category_id == DbCategory.id).order_by(DbCategory.name)
     
     
+    
     movies = query.all()
     return movies
+
 
 
 

@@ -27,7 +27,7 @@ def get_movie_poster(title):
 
 def get_movie_trailer(id):
     key = 0
-    url = f'https://api.themoviedb.org/3/movie/597/videos?api_key=af64e76d663517cdc595fc3a08de6d41&language=en-US'
+    url = f'https://api.themoviedb.org/3/movie/{id}/videos?api_key=af64e76d663517cdc595fc3a08de6d41&language=en-US'
     response = requests.get(url)
     if response.status_code == 200:
       data = response.json()
@@ -39,3 +39,15 @@ def get_movie_trailer(id):
 
     return key
 
+import requests
+
+def get_trending_movies():
+    
+    url = f"https://api.themoviedb.org/3/trending/movie/week?api_key=af64e76d663517cdc595fc3a08de6d41"
+    
+    response = requests.get(url)
+    data = response.json()
+    
+    trending_movies = data.get("results", [])
+    
+    return trending_movies

@@ -1,11 +1,10 @@
-fastapi
-uvicorn
+fastapi==0.97.*
+uvicorn==0.22.*
 sqlalchemy
-pydantic
+pydantic==1.10.*
 passlib
 bcrypt
 python-multipart
 aiofiles
 python-jose
-alembic
 requests

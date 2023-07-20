@@ -7,6 +7,7 @@ class DbCategory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    tmdb = Column(Integer)
 
     movies = relationship("DbMovie", back_populates="category")
 

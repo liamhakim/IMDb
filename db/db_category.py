@@ -8,11 +8,15 @@ from router.schemas import CategoryDisplay, MovieBase, MovieDisplay
 
 
 def create_category(db: Session, category: BaseModel):
-    db_category = DbCategory(name=category.name)
+ try:
+    db_category = DbCategory(name=category.name, tmdb= category.tmdb)
     db.add(db_category)
     db.commit()
     db.refresh(db_category)
     return db_category
+ except Exception as e:
+    print("Exception:", e)
+    raise
 
 
 
