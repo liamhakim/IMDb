@@ -9,7 +9,7 @@ from router.schemas import MovieBase, MovieDisplay
 from db import db_movie
 from db.db_movie import create_movie, get_movie, update_movie, delete_movie
 from db.database import get_db
-from router.tmdb_service import get_movie_poster, get_movie_trailer
+from router.tmdb_service import get_movie_poster, get_movie_trailer, get_trending_movies
 
 router = APIRouter(prefix="/movie", tags=["movie"])
 
@@ -73,4 +73,59 @@ def upload_image(image: UploadFile = File(...)):
     shutil.copyfileobj(image.file, buffer)
 
   return {'filename': path}
+
+##################################
+def map_trending_movie(movie_data):
+    # Perform the mapping from trending movie data to MovieBase schema
+    movie_base = MovieBase(
+        title=movie_data["title"],
+        release_date=movie_data["release_date"],
+        plot_summary=movie_data["overview"],
+        director_id=1,  # Replace with the desired director ID
+        actors=[],
+        average_rating=movie_data['vote_average'],
+        image_url=movie_data["poster_path"]  # Add the actors if available in the movie_data
+    )
+    
+    return movie_base
+
+category_mapping = {
+    28:1,
+    12:2,
+    16:3,
+    35:4,
+    80:5,
+    99:6,
+    18:7,
+    10751:8,
+    14:9,
+    36:10,
+    27:11,
+    10402:12,
+    9648:13,
+    10749:14,
+    878:15,
+    53:16,
+    10752:17,
+    37:18
+}
+
+@router.post("/store-trending-movies")
+def store_trending_movies(db: Session = Depends(get_db)):
+    trending_movies = get_trending_movies()
+
+    for movie in trending_movies:
+        # Map the category ID based on the TMDB genre IDs
+        tmdb_genre_ids = movie.get("genre_ids", [])
+        category_ids = [category_mapping.get(genre_id) for genre_id in tmdb_genre_ids]
+        category_ids = [category_id for category_id in category_ids if category_id is not None]
+        
+        for category_id in category_ids:
+            # Store the movie in the database using the create_movie function
+            # You may need to map the data from the trending_movies to match the MovieBase schema
+            movie_base = map_trending_movie(movie)
+            create_movie(db, movie_base, category_id=category_id)
+    
+    return {"message": "Trending movies stored in the database"}
+
 

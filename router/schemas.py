@@ -1,14 +1,26 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
+
+
+class UserDisplay(BaseModel):
+     id: int
+     username: str
+     email: str
+     
+     class Config:
+        orm_mode = True
+
 
 class ReviewBase(BaseModel):
     movie_id: int
     content: str
 
 class ReviewDisplay(BaseModel):
-    movie_id: int
-    user_id: int
+    id: int
+    user: UserDisplay
     content: str
+    date: datetime
     class Config:
         orm_mode = True
 
@@ -35,6 +47,7 @@ class MovieBase(BaseModel):
     plot_summary: str
     director_id: int
     actors: List[ActorMovie] 
+    average_rating: float
     
 
 class CategoryForMovie(BaseModel):
@@ -60,15 +73,18 @@ class MovieDisplay(BaseModel):
     poster_url: str
     trailer_url: str
     plot_summary: str
+    reviews: List[ReviewDisplay]
     class Config:
         orm_mode = True
 
 class CategoryBase(BaseModel):
     name: str
+    tmdb: int
 
 class CategoryDisplay(BaseModel):
     id: int
     name: str
+    tmdb: int 
     movies: list[MovieDisplay]
 
     class Config:
@@ -102,12 +118,6 @@ class UserBase(BaseModel):
     email: str
     password: str
 
-class UserDisplay(BaseModel):
-     username: str
-     email: str
-     
-     class Config:
-        orm_mode = True
 
 class UserAuth(BaseModel):
     id: int

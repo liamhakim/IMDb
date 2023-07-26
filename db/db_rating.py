@@ -9,24 +9,29 @@ def create_rating( rating: RatingCreate, db: Session , user_id: int ):
     movie = db.query(DbMovie).filter(DbMovie.id == rating.movie_id)
     if not movie.first():
         raise HTTPException(status_code=404, detail="Movie not found")
-
-    db_rating = DbRating(
-       movie_id=rating.movie_id,
-       user_id= user_id,
-       rating_value=rating.rating_value
-       )
-    db.add(db_rating)
-    db.flush()
+    
+    db_rating = db.query(DbRating).filter(DbRating.movie_id == rating.movie_id).filter(DbRating.user_id == user_id)
+    
+    if db_rating.first():
+        db_rating.update({
+            DbRating.rating_value : rating.rating_value
+        })
+    else:
+        db_rating_new = DbRating(
+            movie_id=rating.movie_id,
+            user_id=user_id,
+            rating_value=rating.rating_value
+        )
+        db.add(db_rating_new)
+    db.commit()
+        
     movie_average_rating = db.query(func.avg(DbRating.rating_value)).group_by(DbRating.movie_id).filter(DbRating.movie_id == rating.movie_id).scalar()
     movie.update({
         DbMovie.average_rating : movie_average_rating
     })
-    
     db.commit()
-    db.refresh(db_rating)
-    db.refresh(movie.first())
 
-    return db_rating
+    return rating
 
 def update_rating(db: Session,id: int, request: create_rating, user_id: int):
 
@@ -52,5 +57,8 @@ def delete_rating (db: Session, director_id: int, user_id: int):
     db.delete(rating)
     db.commit()
     return {"message": "rating has been deleted"}
+
+def get_ratings( movie_id: int,db: Session, user_id: int):
+    return db.query(DbRating).filter(DbRating.movie_id == movie_id).filter(DbRating.user_id == user_id).first()
     
 

@@ -1,0 +1,6 @@
+__pycache__/
+imdb.db
+images/*
+!images/.gitkeep
+fastapi-venv/
+ 

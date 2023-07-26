@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, ForeignKey, Integer, DECIMAL, String, Table
+from sqlalchemy import Column, Float, ForeignKey, Integer, DECIMAL, String,DateTime, Table
 from db.database import Base
 from sqlalchemy.orm import relationship
 
@@ -7,6 +7,7 @@ class DbCategory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    tmdb = Column(Integer)
 
     movies = relationship("DbMovie", back_populates="category")
 
@@ -63,6 +64,7 @@ class DbReview(Base):
     movie_id = Column(Integer, ForeignKey("movies.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
     content = Column(String)
+    date = Column(DateTime)
     
     movie = relationship("DbMovie", back_populates="reviews")
     user = relationship("DbUser", back_populates="reviews")
