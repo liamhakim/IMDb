@@ -1,7 +1,10 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
+
 
 class UserDisplay(BaseModel):
+     id: int
      username: str
      email: str
      
@@ -14,9 +17,10 @@ class ReviewBase(BaseModel):
     content: str
 
 class ReviewDisplay(BaseModel):
-    movie_id: int
+    id: int
     user: UserDisplay
     content: str
+    date: datetime
     class Config:
         orm_mode = True
 
